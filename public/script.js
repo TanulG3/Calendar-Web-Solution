@@ -11,9 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// ... rest of your existing script ...
-
-
 function generateCalendar(calendarEl, year) {
     for (let month = 0; month < 12; month++) {
         calendarEl.appendChild(generateMonth(year, month));
@@ -95,19 +92,22 @@ function clearEvents() {
 }
 
 function displayEvent(event) {
-    const { year, month, day, eventName, eventHub } = event; // Destructuring eventHub from event
+    const { year, month, day, eventName, eventHub } = event;
     const eventElement = document.createElement('div');
     eventElement.className = 'event';
     eventElement.textContent = eventName;
 
-    // Use eventHub for the switch statement
+    // Check if event name contains 'ptt'
+    const isPttEvent = eventName.toLowerCase().includes('ptt');
+
     switch(eventHub) {
-        case 'DHKL': eventElement.style.backgroundColor = 'lightblue'; break;
-        case 'DHM': eventElement.style.backgroundColor = 'lightgreen'; break;
-        case 'DHN': eventElement.style.backgroundColor = 'orange'; break;
-        case 'DHMV': eventElement.style.backgroundColor = 'gold'; break;
-        case 'HQ': eventElement.style.backgroundColor = 'lavender'; break;
-        case 'DHT': eventElement.style.backgroundColor = 'lightcoral'; break;
+        case 'DHKL': setEventColor(eventElement, 'lightblue', isPttEvent); break;
+        case 'DHM': setEventColor(eventElement, 'lightgreen', isPttEvent); break;
+        case 'DHN': setEventColor(eventElement, 'orange', isPttEvent); break;
+        case 'DHMV': setEventColor(eventElement, 'gold', isPttEvent); break;
+        case 'HQ': setEventColor(eventElement, 'lavender', isPttEvent); break;
+        case 'DHT': setEventColor(eventElement, 'lightcoral', isPttEvent); break;
+        case 'ALL HUBS': setEventColor(eventElement, 'cyan', isPttEvent); break;
         // Add more cases as needed
     }
 
@@ -116,11 +116,18 @@ function displayEvent(event) {
         dayElement.appendChild(eventElement);
     }
 
-   // Change to a single click listener for editing
-   eventElement.addEventListener('click', function() {
-    openEditModal(event);
+    eventElement.addEventListener('click', function() {
+        openEditModal(event);
     });
+}
 
+function setEventColor(element, color, isPttEvent) {
+    if (isPttEvent) {
+        element.style.backgroundColor = 'white';
+        element.style.border = `2px solid ${color}`;
+    } else {
+        element.style.backgroundColor = color;
+    }
 }
 
 function openEditModal(event) {

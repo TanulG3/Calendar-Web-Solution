@@ -24,6 +24,7 @@
                 <option value="DHMV">DHMV</option>
                 <option value="DHT">DHT</option>
                 <option value="HQ">HQ</option>
+                <option value="ALL HUBS">ALL HUBS</option>
             </select>
         </div>
         <button onclick="saveEvent()">Save Event</button>
@@ -39,10 +40,20 @@
             <option value="DHMV">DHMV</option>
             <option value="DHT">DHT</option>
             <option value="HQ">HQ</option>
+            <option value="ALL HUBS">ALL HUBS</option>
         </select>
         <button onclick="saveEditedEvent()">Save</button>
         <button onclick="deleteEvent()">Delete</button>
     </div>
-    
+    <div id="legend">
+        <h3>Legend</h3>
+        <div class="legend-item"><span class="color-box" style="background-color: lightblue;"></span> DHKL (Digital Hub Kuala Lumpur)</div>
+        <div class="legend-item"><span class="color-box" style="background-color: lightgreen;"></span> DHM  (Digital Hub Madrid)</div>
+        <div class="legend-item"><span class="color-box" style="background-color: orange;"></span> DHN (Digital Hub Nanjing)</div>
+        <div class="legend-item"><span class="color-box" style="background-color: gold;"></span> DHMV (Digital Hub Montevideo)</div>
+        <div class="legend-item"><span class="color-box" style="background-color: lightcoral;"></span> DHT (Digital Hub Toronto)</div>
+        <div class="legend-item"><span class="color-box" style="background-color: lavender;"></span> HQ (Ludwigshafen)</div>
+        <div class="legend-item"><span class="color-box" style="background-color: cyan;"></span> ALL HUBS</div>
+    </div>
 </body>
 </html>

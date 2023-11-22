@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>2024 Calendar</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div id="calendar"></div>
+    <script src="script.js"></script>
+
+    <!-- modal code -->
+    <div id="eventModal" style="display: none;">
+        <div>
+            <label for="eventName">Event Name:</label>
+            <input type="text" id="eventName" name="eventName">
+        </div>
+        <div>
+            <label for="eventHub">HUB:</label>
+            <select id="eventHub" name="eventHub">
+                <option value="DHKL">DHKL</option>
+                <option value="DHM">DHM</option>
+                <option value="DHN">DHN</option>
+                <option value="DHMV">DHMV</option>
+                <option value="DHT">DHT</option>
+                <option value="HQ">HQ</option>
+            </select>
+        </div>
+        <button onclick="saveEvent()">Save Event</button>
+        <button id="closeModalButton">Close</button>
+    </div>
+    
+    <div id="editEventModal" style="display: none;">
+        <input type="text" id="editEventName" name="eventName">
+        <select id="editEventHub" name="eventHub">
+            <option value="DHKL">DHKL</option>
+            <option value="DHM">DHM</option>
+            <option value="DHN">DHN</option>
+            <option value="DHMV">DHMV</option>
+            <option value="DHT">DHT</option>
+            <option value="HQ">HQ</option>
+        </select>
+        <button onclick="saveEditedEvent()">Save</button>
+        <button onclick="deleteEvent()">Delete</button>
+    </div>
+    
+</body>
+</html>

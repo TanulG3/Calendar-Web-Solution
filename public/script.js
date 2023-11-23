@@ -20,27 +20,54 @@ function generateCalendar(calendarEl, year) {
 function generateMonth(year, month) {
     const monthEl = document.createElement('div');
     monthEl.className = 'month';
+    
+    // Month header
     const monthName = new Date(year, month).toLocaleString('default', { month: 'long' });
     const header = document.createElement('h3');
     header.textContent = `${monthName} ${year}`;
     monthEl.appendChild(header);
 
+    // Days of the week header
+    const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const daysOfWeekRow = document.createElement('div');
+    daysOfWeekRow.className = 'weeks-container';
+    daysOfWeek.forEach(day => {
+        const dayOfWeekEl = document.createElement('div');
+        dayOfWeekEl.className = 'day-of-week';
+        dayOfWeekEl.textContent = day;
+        daysOfWeekRow.appendChild(dayOfWeekEl);
+    });
+    monthEl.appendChild(daysOfWeekRow);
+
+    // Weeks container
     const weeksContainer = document.createElement('div');
     weeksContainer.className = 'weeks-container';
 
+    // Calculate the first day of the month
+    const firstDay = new Date(year, month, 1).getDay();
+
+    // Add empty divs for days before the first day of the month
+    for (let i = 0; i < firstDay; i++) {
+        const emptyDayEl = document.createElement('div');
+        emptyDayEl.className = 'day empty';
+        weeksContainer.appendChild(emptyDayEl);
+    }
+
+    // Adding days of the month
     const days = new Date(year, month + 1, 0).getDate();
     for (let day = 1; day <= days; day++) {
         const dayEl = document.createElement('div');
         dayEl.className = 'day';
         dayEl.id = `day-${year}-${month}-${day}`;
         dayEl.textContent = day;
-         // Use 'dblclick' for opening the add event modal
-         dayEl.addEventListener('dblclick', () => openModal(year, month, day));
+        dayEl.addEventListener('dblclick', () => openModal(year, month, day));
         weeksContainer.appendChild(dayEl);
     }
     monthEl.appendChild(weeksContainer);
+
     return monthEl;
 }
+
 
 function openModal(year, month, day) {
     selectedDate = { year, month, day };
@@ -96,7 +123,7 @@ function displayEvent(event) {
     const eventElement = document.createElement('div');
     eventElement.className = 'event';
     eventElement.textContent = eventName;
-
+    eventElement.style.fontWeight = "bold";
     // Check if event name contains 'ptt'
     const isPttEvent = eventName.toLowerCase().includes('ptt');
 

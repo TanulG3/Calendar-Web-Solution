@@ -1,5 +1,6 @@
 let selectedDate = null;
 
+
 document.addEventListener('DOMContentLoaded', function() {
     const calendarEl = document.getElementById('calendar');
     generateCalendar(calendarEl, 2024);
@@ -9,6 +10,16 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('closeModalButton').addEventListener('click', function() {
         document.getElementById('eventModal').style.display = 'none';
     });
+
+    // Event listener for the login button
+    const loginButton = document.getElementById('loginButton');
+    if (loginButton) {
+        loginButton.addEventListener('click', function() {
+            document.getElementById('loginModal').style.display = 'block';
+        });
+    } else {
+        console.error('Login button not found');
+    }
 });
 
 function generateCalendar(calendarEl, year) {
@@ -218,4 +229,32 @@ function deleteEvent() {
         })
         .catch(error => console.error('Error:', error));
     }
+}
+
+
+// Login functionality
+function closeLoginModal() {
+    document.getElementById('loginModal').style.display = 'none';
+}
+
+function login() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    fetch('/api/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Handle login success or failure here
+        console.log(data);
+        closeLoginModal();
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
 }

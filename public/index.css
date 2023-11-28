@@ -2,17 +2,19 @@ body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
     margin: 0;
-    padding: 0;
+    padding: 20px 0; /* Added padding to the top and bottom */
     display: flex;
-    justify-content: center;
-    align-items: flex-start;
+    justify-content: flex-start; /* Align items to the start */
+    flex-direction: column; /* Stack items vertically */
     height: 100vh;
+    overflow-y: auto; /* Add scrolling if content exceeds viewport height */
+    align-items: center;
 }
 
 #calendar {
     width: 80%;
     max-width: 1200px; /* Adjust as needed */
-    margin: 20px;
+    margin: 20px auto; /* Center the calendar */
     display: grid;
     grid-template-columns: 1fr; /* One month per row */
     grid-template-rows: auto; /* Auto-fit month heights */
@@ -177,3 +179,63 @@ body {
 }
 
 
+.page-title {
+    text-align: center; /* Center the text */
+    width: 100%; /* Ensure it spans the full width */
+    margin-top: 0; /* Adjust as needed */
+    margin-bottom: 20px; /* Add some space before the calendar starts */
+    font-size: 2em; /* Adjust the font size as needed */
+    color: #333; /* Set the text color */
+}
+
+#loginButton {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #007bff; /* Example color */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#loginButton:hover {
+    background-color: #0056b3; /* Darker shade for hover effect */
+}
+
+#loginModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px; /* Adjust width as needed */
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: none;
+    z-index: 1000; /* Ensure it's above other elements */
+}
+
+#loginModal label, #loginModal input {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#loginModal button {
+    margin-top: 10px;
+    padding: 5px 15px;
+    border: 1px solid #ddd;
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+#loginModal button:hover {
+    background-color: #e0e0e0;
+}
+
+.modal-content {
+    padding: 20px;
+}

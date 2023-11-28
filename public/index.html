@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="index.css">
 </head>
 <body>
+    <h1 class="page-title">Digital Hubs Global Calendar</h1>
     <div id="calendar"></div>
     <script src="script.js"></script>
 
@@ -45,6 +46,27 @@
         <button onclick="saveEditedEvent()">Save</button>
         <button onclick="deleteEvent()">Delete</button>
     </div>
+
+          <!-- Login Button -->
+          <button id="loginButton">Login</button>
+            <!-- Logout Button -->
+            <button id="logoutButton" style="display: none;">Logout</button>
+          <!-- Login Modal -->
+    <div id="loginModal" style="display: none;">
+        <div class="modal-content">
+        <div>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username">
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password">
+        </div>
+        <button onclick="login()">Login</button>
+        <button onclick="closeLoginModal()">Close</button>
+        </div>
+    </div>
+
     <div id="legend-container">
         <div id="legend-toggle">
             <span>Legend</span>
@@ -62,16 +84,8 @@
             <div class="legend-item"><span class="color-box" style="border-color: rgb(108, 2, 170);"></span> PTT (Poor Time To Travel)</div>
         </div>
         </div>
-    <!-- </div>
-        <div class="legend-item"><span class="color-box" style="background-color: lightblue;"></span> DHKL (Digital Hub Kuala Lumpur)</div>
-        <div class="legend-item"><span class="color-box" style="background-color: lightgreen;"></span> DHM  (Digital Hub Madrid)</div>
-        <div class="legend-item"><span class="color-box" style="background-color: orange;"></span> DHN (Digital Hub Nanjing)</div>
-        <div class="legend-item"><span class="color-box" style="background-color: gold;"></span> DHMV (Digital Hub Montevideo)</div>
-        <div class="legend-item"><span class="color-box" style="background-color: lightcoral;"></span> DHT (Digital Hub Toronto)</div>
-        <div class="legend-item"><span class="color-box" style="background-color: lavender;"></span> HQ (Ludwigshafen)</div>
-        <div class="legend-item"><span class="color-box" style="background-color: cyan;"></span> ALL HUBS</div>
-        <div class="legend-item"><span class="color-box" style="border-color: rgb(108, 2, 170);"></span> PTT (Poor Time To Travel)</div>
-        </div>
-    </div> -->
+    
+   
+
 </body>
 </html>

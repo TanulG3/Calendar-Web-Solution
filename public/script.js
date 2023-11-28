@@ -20,6 +20,12 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.error('Login button not found');
     }
+
+     // Event listener for the logout button
+     const logoutButton = document.getElementById('logoutButton');
+     logoutButton.addEventListener('click', function() {
+         logout();
+     });
 });
 
 function generateCalendar(calendarEl, year) {
@@ -81,9 +87,15 @@ function generateMonth(year, month) {
 
 
 function openModal(year, month, day) {
-    selectedDate = { year, month, day };
-    document.getElementById('eventModal').style.display = 'block';
+    // Check if the logout button is visible, indicating that the user is logged in
+    if (document.getElementById('logoutButton').style.display === 'block') {
+        selectedDate = { year, month, day };
+        document.getElementById('eventModal').style.display = 'block';
+    } else {
+        alert("Please log in to add or edit events.");
+    }
 }
+
 
 window.saveEvent = function() {
     const eventName = document.getElementById('eventName').value;
@@ -98,6 +110,7 @@ window.saveEvent = function() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Session-ID': localStorage.getItem('sessionId')  // Include session ID
         },
         body: JSON.stringify(eventData),
     })
@@ -109,7 +122,7 @@ window.saveEvent = function() {
     .catch((error) => {
         console.error('Error:', error);
     });
-}
+};
 
 function loadEvents() {
     clearEvents(); // Clear existing events before loading new ones
@@ -155,8 +168,8 @@ function displayEvent(event) {
     }
 
     eventElement.addEventListener('click', function() {
-        openEditModal(event);
-    });
+            openEditModal(event);
+        });
 }
 
 function setEventColor(element, color, isPttEvent) {
@@ -169,33 +182,31 @@ function setEventColor(element, color, isPttEvent) {
 }
 
 function openEditModal(event) {
-    // Populate the modal with event data
-    document.getElementById('editEventName').value = event.eventName;
-    document.getElementById('editEventHub').value = event.eventHub;
-    
-    // Show the modal
-    document.getElementById('editEventModal').style.display = 'block';
-
-    // Attach event ID to the modal for reference
-    document.getElementById('editEventModal').setAttribute('data-event-id', event._id);
+    // Check if the user is logged in by verifying the visibility of the logout button
+    if (document.getElementById('logoutButton').style.display === 'block') {
+        // Populate the modal with event data
+        document.getElementById('editEventName').value = event.eventName;
+        document.getElementById('editEventHub').value = event.eventHub;
+        // Show the modal
+        document.getElementById('editEventModal').style.display = 'block';
+        // Attach event ID to the modal for reference
+        document.getElementById('editEventModal').setAttribute('data-event-id', event._id);
+    } else {
+        alert("Please log in to edit events.");
+    }
 }
-// Additional code for handling the modal, etc.
+
 
 window.saveEditedEvent = function() {
     const eventId = document.getElementById('editEventModal').getAttribute('data-event-id');
     const eventName = document.getElementById('editEventName').value.trim();
     const eventHub = document.getElementById('editEventHub').value;
 
-    // Check if the event name is empty
-    if (!eventName) {
-        alert("Event name cannot be empty.");
-        return;
-    }
-
     fetch(`/api/events/${eventId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
+            'Session-ID': localStorage.getItem('sessionId')  // Include session ID
         },
         body: JSON.stringify({ eventName, eventHub }),
     })
@@ -215,10 +226,16 @@ window.saveEditedEvent = function() {
 
 
 
+
 function deleteEvent() {
     const eventId = document.getElementById('editEventModal').getAttribute('data-event-id');
     if (confirm('Are you sure you want to delete this event?')) {
-        fetch(`/api/events/${eventId}`, { method: 'DELETE' })
+        fetch(`/api/events/${eventId}`, {
+            method: 'DELETE',
+            headers: {
+                'Session-ID': localStorage.getItem('sessionId')  // Include session ID
+            }
+        })
         .then(response => {
             if(response.ok) {
                 document.getElementById('editEventModal').style.display = 'none';
@@ -230,6 +247,7 @@ function deleteEvent() {
         .catch(error => console.error('Error:', error));
     }
 }
+
 
 
 // Login functionality
@@ -245,16 +263,55 @@ function login() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            
         },
         body: JSON.stringify({ username, password }),
     })
     .then(response => response.json())
     .then(data => {
-        // Handle login success or failure here
-        console.log(data);
+        if (data.sessionId) {
+            localStorage.setItem('sessionId', data.sessionId);
+           // Show logout button and hide login button
+        document.getElementById('logoutButton').style.display = 'block';
+        document.getElementById('loginButton').style.display = 'none';
+        }
         closeLoginModal();
     })
     .catch((error) => {
         console.error('Error:', error);
     });
+}
+
+
+function getAuthHeaders() {
+    const sessionId = localStorage.getItem('sessionId');
+    return sessionId ? { 'Session-ID': sessionId } : {};
+}
+
+function logout() {
+    const sessionId = localStorage.getItem('sessionId');
+    if (sessionId) {
+        fetch('/api/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Session-ID': sessionId  // Include session ID
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Logged out successfully');
+            } else {
+                console.error('Logout failed');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+
+        // Remove the session ID from local storage
+        localStorage.removeItem('sessionId');
+
+        // Hide the logout button and show the login button
+        document.getElementById('logoutButton').style.display = 'none';
+        document.getElementById('loginButton').style.display = 'block';
+    }
 }

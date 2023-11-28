@@ -239,3 +239,19 @@ body {
 .modal-content {
     padding: 20px;
 }
+
+.auth-button {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #007bff; /* Example color */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.auth-button:hover {
+    background-color: #0056b3; /* Darker shade for hover effect */
+}

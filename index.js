@@ -10,7 +10,10 @@ app.use(express.json()); // Middleware to parse JSON bodies
 const db = new Datastore({ filename: 'events.db', autoload: true });
 const permissionsDb = new Datastore({ filename: 'permissions.db', autoload: true });
 
-// Middleware to check for a valid session
+// Session expiration time in milliseconds (30 minutes)
+const sessionExpirationTime = 30 * 60 * 1000;
+
+// Middleware to check for a valid and non-expired session
 const checkSession = (req, res, next) => {
     const sessionId = req.headers['session-id'];
     if (!sessionId) {
@@ -18,8 +21,8 @@ const checkSession = (req, res, next) => {
     }
 
     permissionsDb.findOne({ sessionId }, (err, user) => {
-        if (err || !user) {
-            return res.status(401).json({ message: 'Invalid session' });
+        if (err || !user || (user.expiration && user.expiration < Date.now())) {
+            return res.status(401).json({ message: 'Invalid or expired session' });
         }
         next();
     });
@@ -78,7 +81,8 @@ app.post('/api/login', (req, res) => {
             res.status(500).send(err);
         } else if (doc) {
             const sessionId = crypto.randomBytes(16).toString('hex');
-            permissionsDb.update({ username }, { $set: { sessionId } }, {}, (err) => {
+            const expiration = Date.now() + sessionExpirationTime;
+            permissionsDb.update({ username }, { $set: { sessionId, expiration } }, {}, (err) => {
                 if (err) {
                     res.status(500).send(err);
                 } else {
@@ -92,15 +96,20 @@ app.post('/api/login', (req, res) => {
 });
 
 app.post('/api/logout', (req, res) => {
-    const sessionId = req.headers['session-id'];
-    permissionsDb.update({ sessionId }, { $unset: { sessionId: 1 } }, {}, (err) => {
-        if (err) {
-            res.status(500).send(err);
-        } else {
-            res.status(200).json({ message: 'Logged out successfully' });
-        }
-    });
+    const { sessionId } = req.body;
+    if (sessionId) {
+        permissionsDb.update({ sessionId }, { $unset: { sessionId: 1, expiration: 1 } }, {}, (err) => {
+            if (err) {
+                res.status(500).send(err);
+            } else {
+                res.status(200).json({ message: 'Logged out successfully' });
+            }
+        });
+    } else {
+        res.status(400).json({ message: 'No session ID provided' });
+    }
 });
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

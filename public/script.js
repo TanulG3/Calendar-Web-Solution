@@ -110,14 +110,22 @@ window.saveEvent = function() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Session-ID': localStorage.getItem('sessionId')  // Include session ID
+            'Session-ID': localStorage.getItem('sessionId')
         },
         body: JSON.stringify(eventData),
     })
-    .then(response => response.json())
+    .then(response => {
+        if (response.status === 401) {
+            handleSessionExpired();
+            return;
+        }
+        return response.json();
+    })
     .then(data => {
-        document.getElementById('eventModal').style.display = 'none';
-        loadEvents(); // Reload events
+        if (data) {
+            document.getElementById('eventModal').style.display = 'none';
+            loadEvents(); // Reload events
+        }
     })
     .catch((error) => {
         console.error('Error:', error);
@@ -206,20 +214,22 @@ window.saveEditedEvent = function() {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            'Session-ID': localStorage.getItem('sessionId')  // Include session ID
+            'Session-ID': localStorage.getItem('sessionId')
         },
         body: JSON.stringify({ eventName, eventHub }),
     })
     .then(response => {
-        if(response.ok) {
-            return response.json();
-        } else {
-            throw new Error('Network response was not ok.');
+        if (response.status === 401) {
+            handleSessionExpired();
+            return;
         }
+        return response.json();
     })
     .then(data => {
-        document.getElementById('editEventModal').style.display = 'none';
-        loadEvents();
+        if (data) {
+            document.getElementById('editEventModal').style.display = 'none';
+            loadEvents();
+        }
     })
     .catch(error => console.error('Error:', error));
 };
@@ -233,11 +243,15 @@ function deleteEvent() {
         fetch(`/api/events/${eventId}`, {
             method: 'DELETE',
             headers: {
-                'Session-ID': localStorage.getItem('sessionId')  // Include session ID
+                'Session-ID': localStorage.getItem('sessionId')
             }
         })
         .then(response => {
-            if(response.ok) {
+            if (response.status === 401) {
+                handleSessionExpired();
+                return;
+            }
+            if (response.ok) {
                 document.getElementById('editEventModal').style.display = 'none';
                 loadEvents();
             } else {
@@ -294,24 +308,33 @@ function logout() {
         fetch('/api/logout', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Session-ID': sessionId  // Include session ID
-            }
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ sessionId })
         })
         .then(response => {
             if (response.ok) {
                 console.log('Logged out successfully');
+                localStorage.removeItem('sessionId');
+                document.getElementById('logoutButton').style.display = 'none';
+                document.getElementById('loginButton').style.display = 'block';
             } else {
                 console.error('Logout failed');
             }
         })
         .catch(error => console.error('Error:', error));
-
-        // Remove the session ID from local storage
-        localStorage.removeItem('sessionId');
-
-        // Hide the logout button and show the login button
-        document.getElementById('logoutButton').style.display = 'none';
-        document.getElementById('loginButton').style.display = 'block';
     }
+}
+
+
+function handleSessionExpired() {
+    alert("Your session has expired. Please log in again.");
+    logoutUser();
+}
+
+function logoutUser() {
+    localStorage.removeItem('sessionId');
+    document.getElementById('loginButton').style.display = 'block';
+    document.getElementById('logoutButton').style.display = 'none';
+    // Optionally, redirect to the login page or refresh the page
 }
